@@ -53,17 +53,16 @@ class MyWidget : public QWidget {
 			int pb = (255 * (Cb - 128)) / 224.0;
 			int pr = (255 * (Cr - 128)) / 224.0;
 
-			unsigned int r = 1.0 * y1 + 0     * pb + 1.402 * pr;
-			unsigned int g = 1.0 * y1 - 0.344 * pb - 0.714 * pr;
-			unsigned int b = 1.0 * y1 + 1.772 * pb + 0     * pr;
-			
-			r = Y1;
-			b = Y1;
-			g = Y1;
+			int r = 1.0 * y1 + 0     * pb + 1.402 * pr;
+			int g = 1.0 * y1 - 0.344 * pb - 0.714 * pr;
+			int b = 1.0 * y1 + 1.772 * pb + 0     * pr;
 
 			r = r>255?255:r;
+			r = r<0?0:r;
 			g = g>255?255:g;
+			g = g<0?0:g;
 			b = b>255?255:b;
+			b = b<0?0:b;
 			image.setPixel(x,y, r<<16 | g<<8 | b);
 			
 			Y1 = *ptr+2;
@@ -77,13 +76,12 @@ class MyWidget : public QWidget {
 			g = 1.0 * y1 - 0.344 * pb - 0.714 * pr;
 			b = 1.0 * y1 + 1.772 * pb + 0     * pr;
 			
-			r = Y1;
-			b = Y1;
-			g = Y1;
-			
 			r = r>255?255:r;
+			r = r<0?0:r;
 			g = g>255?255:g;
+			g = g<0?0:g;
 			b = b>255?255:b;
+			b = b<0?0:b;
  			image.setPixel(x+1,y, r<<16 | g<<8 | b );
 	
 			x += 2;
