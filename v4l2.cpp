@@ -34,55 +34,67 @@ struct v4l2_buffer buf;
 
 class MyWidget : public QWidget {
 	public:
+	QImage* _p_image;
+
+	MyWidget() {
+		_p_image = NULL;
+		setAutoFillBackground(false);
+	}
 	
 	void paintEvent(QPaintEvent* event) {
-			//QImage image((const uchar*)buffers[buf.index].start, RESX, RESY, 100, QImage::Format_Indexed8);
 		printf(".\n");
-		QImage image(RESX,RESY, QImage::Format_RGB888);
+		if (!_p_image)
+			_p_image = new QImage(RESX,RESY, QImage::Format_RGB888);
 
 		const unsigned char* ptr = ((const unsigned char*)buffers[buf.index].start);
 		
 		int x = 0;
 		int y = 0;
 		while (y<RESY) {
-				
-			int Y1 = *ptr;
-			int Cb = *(ptr+1);
-			int Cr = *(ptr+3);
-			int y1 = (255 * (Y1 -  16)) / 219.0;
-			int pb = (255 * (Cb - 128)) / 224.0;
-			int pr = (255 * (Cr - 128)) / 224.0;
+			int y1;
+			int pb;
+			int pr;
+			int r;
+			int g;
+			int b;
 
-			int r = 1.0 * y1 + 0     * pb + 1.402 * pr;
-			int g = 1.0 * y1 - 0.344 * pb - 0.714 * pr;
-			int b = 1.0 * y1 + 1.772 * pb + 0     * pr;
+			int Y1;
+			int Cb;
+			int Cr;
 
+			Y1 = *ptr;
+			Cb = *(ptr+1);
+			Cr = *(ptr+3);
+			y1 = (255 * (Y1 -  16)) / 219;
+			pb = (255 * (Cb - 128)) / 224;
+			pr = (255 * (Cr - 128)) / 224;
+			r = y1 + (0    * pb + 1402 * pr)/1000;
+			g = y1 + (-344 * pb - 714  * pr)/1000;
+			b = y1 + (1772 * pb + 0    * pr)/1000;
 			r = r>255?255:r;
 			r = r<0?0:r;
 			g = g>255?255:g;
 			g = g<0?0:g;
 			b = b>255?255:b;
 			b = b<0?0:b;
-			image.setPixel(x,y, r<<16 | g<<8 | b);
+			_p_image->setPixel(x,y, r<<16 | g<<8 | b);
 			
 			Y1 = *ptr+2;
 			Cb = *(ptr+1);
 			Cr = *(ptr+3);
-			y1 = (255 * (Y1 -  16)) / 219.0;
-			pb = (255 * (Cb - 128)) / 224.0;
-			pr = (255 * (Cr - 128)) / 224.0;
-
-			r = 1.0 * y1 + 0     * pb + 1.402 * pr;
-			g = 1.0 * y1 - 0.344 * pb - 0.714 * pr;
-			b = 1.0 * y1 + 1.772 * pb + 0     * pr;
-			
+			y1 = (255 * (Y1 -  16)) / 219;
+			pb = (255 * (Cb - 128)) / 224;
+			pr = (255 * (Cr - 128)) / 224;
+			r = y1 + (0    * pb + 1402 * pr)/1000;
+			g = y1 + (-344 * pb - 714  * pr)/1000;
+			b = y1 + (1772 * pb + 0    * pr)/1000;
 			r = r>255?255:r;
 			r = r<0?0:r;
 			g = g>255?255:g;
 			g = g<0?0:g;
 			b = b>255?255:b;
 			b = b<0?0:b;
- 			image.setPixel(x+1,y, r<<16 | g<<8 | b );
+			_p_image->setPixel(x+1,y, r<<16 | g<<8 | b);
 	
 			x += 2;
 			if (x > RESX-1) {
@@ -93,7 +105,7 @@ class MyWidget : public QWidget {
 		}
 		
 		QPainter p(this);
-		p.drawImage(QPoint(0,0),image);
+		p.drawImage(QPoint(0,0),*_p_image);
 		p.end();
 	}
 
