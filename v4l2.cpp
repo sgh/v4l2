@@ -33,7 +33,7 @@ static unsigned int     n_buffers       = 0;
 struct v4l2_buffer buf;
 
 class MyWidget : public QWidget {
-	public:
+public:
 	QImage* _p_image;
 
 	MyWidget() {
@@ -244,10 +244,10 @@ void set_input() {
 		buffers[n_buffers].length = buf.length;
 		buffers[n_buffers].start =
 			mmap (NULL /* start anywhere */,
-				buf.length,
-				PROT_READ | PROT_WRITE /* required */,
-				MAP_SHARED /* recommended */,
-				fd, buf.m.offset);
+			      buf.length,
+			      PROT_READ | PROT_WRITE /* required */,
+			      MAP_SHARED /* recommended */,
+			      fd, buf.m.offset);
 
 		if (MAP_FAILED == buffers[n_buffers].start) {
 			perror ("mmap");
@@ -402,21 +402,21 @@ static void mainloop(void)
 			r = select (fd + 1, &fds, NULL, NULL, &tv);
 
 			if (-1 == r) {
-							if (EINTR == errno)
-											continue;
+				if (EINTR == errno)
+					continue;
 
-							perror ("select");
+				perror ("select");
 			}
 
 			if (0 == r) {
-							fprintf (stderr, "select timeout\n");
-							exit (EXIT_FAILURE);
+				fprintf (stderr, "select timeout\n");
+				exit (EXIT_FAILURE);
 			}
 
 			if (read_frame ())
-							break;
+				break;
 
-		/* EAGAIN - continue select loop. */
+			/* EAGAIN - continue select loop. */
 		}
 	}
 }
